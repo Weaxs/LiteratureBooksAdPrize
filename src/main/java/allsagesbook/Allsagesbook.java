@@ -20,17 +20,14 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Allsagesbook {
 
     public JSONObject getBookMessage(BookMessage book) {
 
         // 通过URI添加请求头的参数
-        List<NameValuePair> params = new ArrayList<>();
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("pageNum", "1"));
         URI uri = null;
         try {
@@ -105,9 +102,10 @@ public class Allsagesbook {
 
         //选择height属性为23，width属性为528，且只含有/没有div子标签
         Elements items = document.select("[height=23],[width=528].content > div");
+//        Map<String, String> isbnMess = new IdentityHashMap<String, String>();
         JSONObject isbnMess = new JSONObject();
         for (int i = 0;i < items.size() ; i = i + 2) {
-            isbnMess.put(items.get(i).text(), items.get(i + 1).text());
+            isbnMess.put(items.get(i + 1).text(), items.get(i).text());
         }
 
         return isbnMess;

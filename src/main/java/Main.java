@@ -2,7 +2,7 @@ import allsagesbook.Allsagesbook;
 import allsagesbook.BookMessage;
 import com.alibaba.fastjson.JSONObject;
 
-public class Test {
+public class Main {
 
     public static void main(String[] args) {
 
