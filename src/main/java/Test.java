@@ -12,7 +12,6 @@ public class Test {
         JSONObject re = allsagesbook.getBookMessage(book);
         System.out.println(re.toJSONString());
 
-
     }
 
 }

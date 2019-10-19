@@ -53,11 +53,7 @@ public class Allsagesbook {
         StringEntity stringEntity = new StringEntity(requestBody, "GBK");
         httpPost.setEntity(stringEntity);
 
-
         return analysisHtml(postApi(httpPost));
-
-
-
 
     }
 
@@ -113,7 +109,6 @@ public class Allsagesbook {
         for (int i = 0;i < items.size() ; i = i + 2) {
             isbnMess.put(items.get(i).text(), items.get(i + 1).text());
         }
-
 
         return isbnMess;
     }
