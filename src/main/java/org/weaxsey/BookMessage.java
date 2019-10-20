@@ -1,4 +1,4 @@
-package allsagesbook;
+package org.weaxsey;
 
 public class BookMessage {
 
