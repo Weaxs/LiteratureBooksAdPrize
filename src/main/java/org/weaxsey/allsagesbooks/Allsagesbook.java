@@ -1,4 +1,4 @@
-package org.weaxsey;
+package org.weaxsey.allsagesbooks;
 
 import com.alibaba.fastjson.JSONObject;
 import org.apache.http.HttpEntity;
@@ -15,6 +15,7 @@ import org.apache.http.util.EntityUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+import org.weaxsey.domain.BookMessage;
 
 import java.io.IOException;
 import java.net.URI;
