@@ -15,6 +15,8 @@ import org.apache.http.util.EntityUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+import org.springframework.stereotype.Service;
+import org.weaxsey.allsagesbooks.api.IAllsagesbook;
 import org.weaxsey.domain.BookMessage;
 
 import java.io.IOException;
@@ -23,7 +25,8 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Allsagesbook {
+@Service
+public class AllsagesbookService implements IAllsagesbook {
 
     public JSONObject getBookMessage(BookMessage book) {
 
