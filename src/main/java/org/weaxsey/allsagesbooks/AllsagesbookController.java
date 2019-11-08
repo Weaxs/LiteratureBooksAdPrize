@@ -17,7 +17,7 @@ public class AllsagesbookController {
 
     @RequestMapping(value = "/getBooks", method = RequestMethod.POST)
     public JSONObject getBookMessage(BookMessage book) {
-        return allsagesbook.getBookMessage(book);
+        return allsagesbook.getBookMessageByRequest(book);
     }
 
 }

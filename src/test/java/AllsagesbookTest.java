@@ -22,9 +22,10 @@ public class AllsagesbookTest {
     @Test
     public void getBookTest() {
         BookMessage book = new BookMessage();
-        book.setBookName("月落荒寺");
+        book.setBookName("傲慢与偏见");
+//        book.setBookName("月落荒寺");
 //        book.setBookName("pride and prejudice");
-        JSONObject re = allsagesbook.getBookMessage(book);
+        JSONObject re = allsagesbook.getBookMessageByRequest(book);
         logger.info(re.toJSONString());
     }
 }

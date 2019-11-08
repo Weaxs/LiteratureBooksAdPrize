@@ -5,6 +5,8 @@ import org.weaxsey.domain.BookMessage;
 
 public interface IAllsagesbook {
 
-    JSONObject getBookMessage(BookMessage book);
+    JSONObject getBookMessageByRequest(BookMessage book);
+
+    JSONObject getBookMessageByHttpClient(BookMessage book);
 
 }

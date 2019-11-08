@@ -4,9 +4,11 @@ import com.alibaba.fastjson.JSONObject;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.ParseException;
+import org.apache.http.client.fluent.Request;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -22,13 +24,35 @@ import org.weaxsey.domain.BookMessage;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class AllsagesbookService implements IAllsagesbook {
 
-    public JSONObject getBookMessage(BookMessage book) {
+    public JSONObject getBookMessageByRequest(BookMessage book) {
+
+        String params = "?pageNum=1";
+        String requestBody = "book=";requestBody += book.getBookName();
+        requestBody += "&author=";requestBody += book.getAuthor();
+        requestBody += "&publisher=";requestBody += book.getPublisher();
+        requestBody += "&publishDate=";requestBody += book.getPublishDate();
+        requestBody += "&publishPrefix=";requestBody += ">=";
+        requestBody += "&isHave=";requestBody += "all";
+        String url = "http://www.allsagesbooks.com/search/searchResult.asp" + params;
+        String reponse;
+        try {
+            reponse = Request.Post(url).bodyString(requestBody, ContentType.create("application/x-www-form-urlencoded", "GBK"))
+                    .execute().returnContent().asString(Charset.forName("GBK"));
+        } catch (IOException e) {
+            throw new RuntimeException("请求接口出错！");
+        }
+
+        return analysisHtml(reponse);
+    }
+
+    public JSONObject getBookMessageByHttpClient(BookMessage book) {
 
         // 通过URI添加请求头的参数
         List<NameValuePair> params = new ArrayList<NameValuePair>();
