@@ -3,6 +3,7 @@ package org.weaxsey.traslation;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.entity.ContentType;
+import org.springframework.stereotype.Service;
 import org.weaxsey.traslation.api.ITranslateService;
 
 import java.io.IOException;
@@ -10,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 
+@Service
 public class TranslateServiceImpl implements ITranslateService {
 
 
