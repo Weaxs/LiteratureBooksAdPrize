@@ -54,5 +54,16 @@
             <artifactId>spring-boot-starter-logging</artifactId>
         </dependency>
     </dependencies>
+
+    <build>
+        <testResources>
+            <testResource>
+                <directory>${project.basedir}/src/test/resources</directory>
+            </testResource>
+            <testResource>
+                <directory>${project.basedir}/src/main/resources</directory>
+            </testResource>
+        </testResources>
+    </build>
     
 </project>
