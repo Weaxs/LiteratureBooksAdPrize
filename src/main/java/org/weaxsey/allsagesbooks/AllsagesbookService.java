@@ -1,124 +1,69 @@
 package org.weaxsey.allsagesbooks;
 
 import com.alibaba.fastjson.JSONObject;
-import org.apache.http.HttpEntity;
-import org.apache.http.NameValuePair;
-import org.apache.http.ParseException;
-import org.apache.http.client.fluent.Request;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.weaxsey.allsagesbooks.api.IAllsagesbook;
 import org.weaxsey.domain.BookMessage;
+import org.weaxsey.remotecall.api.IRemoteCallService;
+import org.weaxsey.remotecall.domain.RemoteMsg;
+import org.weaxsey.utils.ReqHeadSpliceUtils;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class AllsagesbookService implements IAllsagesbook {
 
+    @Autowired
+    private IRemoteCallService remoteCallService;
+
     public JSONObject getBookMessageByRequest(BookMessage book) {
 
-        String params = "?pageNum=1";
+        Map<String, String> params = new HashMap<>();
+        params.put("pageNum", "1");
         String requestBody = "book=";requestBody += book.getBookName();
         requestBody += "&author=";requestBody += book.getAuthor();
         requestBody += "&publisher=";requestBody += book.getPublisher();
         requestBody += "&publishDate=";requestBody += book.getPublishDate();
         requestBody += "&publishPrefix=";requestBody += ">=";
         requestBody += "&isHave=";requestBody += "all";
-        String url = "http://www.allsagesbooks.com/search/searchResult.asp" + params;
-        String reponse;
-        try {
-            reponse = Request.Post(url).bodyString(requestBody, ContentType.create("application/x-www-form-urlencoded", "GBK"))
-                    .execute().returnContent().asString(Charset.forName("GBK"));
-        } catch (IOException e) {
-            throw new RuntimeException("请求接口出错！");
-        }
+        String url =  ReqHeadSpliceUtils.getUrlWithHeadParams("http://www.allsagesbooks.com/search/searchResult.asp", params);
 
-        return analysisHtml(reponse);
+
+        RemoteMsg remoteMsg = new RemoteMsg();
+        remoteMsg.setCharset("GBK");
+        remoteMsg.setUrl(url);
+        remoteMsg.setRequestBody(requestBody);
+        remoteMsg.setContentType("application/x-www-form-urlencoded");
+        return analysisHtml(remoteCallService.remoteCallByRequestPOST(remoteMsg));
     }
 
     public JSONObject getBookMessageByHttpClient(BookMessage book) {
 
-        // 通过URI添加请求头的参数
-        List<NameValuePair> params = new ArrayList<NameValuePair>();
-        params.add(new BasicNameValuePair("pageNum", "1"));
-        URI uri = null;
-        try {
-            uri = new URIBuilder().setScheme("http").setHost("www.allsagesbooks.com")
-                    .setPath("/search/searchResult.asp").setParameters(params).build();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-
-
-        HttpPost httpPost = new HttpPost(uri);
-        httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded");
-        // 组装请求体的参数（编译器告诉我String比StringBuilder效率高，？？
+        Map<String, String> headParams = new HashMap<>();
+        headParams.put("pageNum", "1");
         String requestBody = "book=";requestBody += book.getBookName();
         requestBody += "&author=";requestBody += book.getAuthor();
         requestBody += "&publisher=";requestBody += book.getPublisher();
         requestBody += "&publishDate=";requestBody += book.getPublishDate();
         requestBody += "&publishPrefix=";requestBody += ">=";
         requestBody += "&isHave=";requestBody += "all";
-        StringEntity stringEntity = new StringEntity(requestBody, "GBK");
-        httpPost.setEntity(stringEntity);
 
-        return analysisHtml(postApi(httpPost));
+        RemoteMsg remoteMsg = new RemoteMsg();
+        remoteMsg.setHost("www.allsagesbooks.com");
+        remoteMsg.setPath("/search/searchResult.asp");
+        remoteMsg.setScheme("http");
+        remoteMsg.setHeadParamMap(headParams);
+        remoteMsg.setContentType("application/x-www-form-urlencoded");
+        remoteMsg.setCharset("GBK");
+        remoteMsg.setRequestBody(requestBody);
 
-    }
+        return analysisHtml(remoteCallService.remoteCallByHttpClientPOST(remoteMsg));
 
-    /**
-     * 调用万圣书园查询书的接口
-     */
-    private String postApi(HttpPost httpPost) {
-        String rtnMessage = null;
-
-        // 获得Http客户端(可以理解为:你得先有一个浏览器;注意:实际上HttpClient与浏览器是不一样的)
-        CloseableHttpClient httpClient = HttpClientBuilder.create().build();
-
-        // 响应模型
-        CloseableHttpResponse response = null;
-        try {
-            // 由客户端执行(发送)Post请求
-            response = httpClient.execute(httpPost);
-            // 从响应模型中获取响应实体
-            HttpEntity responseEntity = response.getEntity();
-
-            if (responseEntity != null) {
-                rtnMessage = EntityUtils.toString(responseEntity,"GBK");
-            }
-        } catch (ParseException |IOException e) {
-            e.printStackTrace();
-        }  finally {
-            try {
-                // 释放资源
-                if (httpClient != null) {
-                    httpClient.close();
-                }
-                if (response != null) {
-                    response.close();
-                }
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return rtnMessage;
     }
 
     /**
