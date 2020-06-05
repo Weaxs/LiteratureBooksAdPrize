@@ -1,4 +1,4 @@
-package org.weaxsey.domain;
+package org.weaxsey.book.domain;
 
 public class BookMessage {
 

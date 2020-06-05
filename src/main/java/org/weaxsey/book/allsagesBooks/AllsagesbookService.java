@@ -1,4 +1,4 @@
-package org.weaxsey.allsagesbooks;
+package org.weaxsey.book.allsagesBooks;
 
 import com.alibaba.fastjson.JSONObject;
 import org.jsoup.Jsoup;
@@ -6,11 +6,11 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.weaxsey.allsagesbooks.api.IAllsagesbook;
-import org.weaxsey.domain.BookMessage;
+import org.weaxsey.book.allsagesBooks.api.IAllsagesbook;
+import org.weaxsey.book.domain.BookMessage;
 import org.weaxsey.remotecall.api.IRemoteCallService;
 import org.weaxsey.remotecall.domain.RemoteMsg;
-import org.weaxsey.utils.ReqHeadSpliceUtils;
+import org.weaxsey.utils.RequestSpliceUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,19 +25,20 @@ public class AllsagesbookService implements IAllsagesbook {
 
         Map<String, String> params = new HashMap<>();
         params.put("pageNum", "1");
-        String requestBody = "book=";requestBody += book.getBookName();
-        requestBody += "&author=";requestBody += book.getAuthor();
-        requestBody += "&publisher=";requestBody += book.getPublisher();
-        requestBody += "&publishDate=";requestBody += book.getPublishDate();
-        requestBody += "&publishPrefix=";requestBody += ">=";
-        requestBody += "&isHave=";requestBody += "all";
-        String url =  ReqHeadSpliceUtils.getUrlWithHeadParams("http://www.allsagesbooks.com/search/searchResult.asp", params);
-
+        Map<String, String> bodyMap = new HashMap<>();
+        bodyMap.put("book", book.getBookName());
+        bodyMap.put("author", book.getAuthor());
+        bodyMap.put("publisher", book.getPublisher());
+        bodyMap.put("publishDate", book.getPublishDate());
+        bodyMap.put("publishPrefix", ">=");
+        bodyMap.put("isHave", "all");
+        String url =  RequestSpliceUtils.getUrlWithHeadParamsNoEncode("http://www.allsagesbooks.com/search/searchResult.asp", params);
+        String body = RequestSpliceUtils.getBodyWithParam(bodyMap);
 
         RemoteMsg remoteMsg = new RemoteMsg();
         remoteMsg.setCharset("GBK");
         remoteMsg.setUrl(url);
-        remoteMsg.setRequestBody(requestBody);
+        remoteMsg.setRequestBody(body);
         remoteMsg.setContentType("application/x-www-form-urlencoded");
         return analysisHtml(remoteCallService.remoteCallByRequestPOST(remoteMsg));
     }
@@ -46,12 +47,14 @@ public class AllsagesbookService implements IAllsagesbook {
 
         Map<String, String> headParams = new HashMap<>();
         headParams.put("pageNum", "1");
-        String requestBody = "book=";requestBody += book.getBookName();
-        requestBody += "&author=";requestBody += book.getAuthor();
-        requestBody += "&publisher=";requestBody += book.getPublisher();
-        requestBody += "&publishDate=";requestBody += book.getPublishDate();
-        requestBody += "&publishPrefix=";requestBody += ">=";
-        requestBody += "&isHave=";requestBody += "all";
+        Map<String, String> bodyMap = new HashMap<>();
+        bodyMap.put("book", book.getBookName());
+        bodyMap.put("author", book.getAuthor());
+        bodyMap.put("publisher", book.getPublisher());
+        bodyMap.put("publishDate", book.getPublishDate());
+        bodyMap.put("publishPrefix", ">=");
+        bodyMap.put("isHave", "all");
+        String body = RequestSpliceUtils.getBodyWithParam(bodyMap);
 
         RemoteMsg remoteMsg = new RemoteMsg();
         remoteMsg.setHost("www.allsagesbooks.com");
@@ -60,10 +63,15 @@ public class AllsagesbookService implements IAllsagesbook {
         remoteMsg.setHeadParamMap(headParams);
         remoteMsg.setContentType("application/x-www-form-urlencoded");
         remoteMsg.setCharset("GBK");
-        remoteMsg.setRequestBody(requestBody);
+        remoteMsg.setRequestBody(body);
 
         return analysisHtml(remoteCallService.remoteCallByHttpClientPOST(remoteMsg));
 
+    }
+
+    @Override
+    public JSONObject getRank() {
+        return null;
     }
 
     /**

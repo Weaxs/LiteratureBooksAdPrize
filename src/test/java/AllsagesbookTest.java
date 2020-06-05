@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.weaxsey.QuickStart;
-import org.weaxsey.allsagesbooks.api.IAllsagesbook;
-import org.weaxsey.domain.BookMessage;
+import org.weaxsey.book.allsagesBooks.api.IAllsagesbook;
+import org.weaxsey.book.domain.BookMessage;
 
 @SpringBootTest(classes = QuickStart.class)
 @RunWith(SpringRunner.class)
