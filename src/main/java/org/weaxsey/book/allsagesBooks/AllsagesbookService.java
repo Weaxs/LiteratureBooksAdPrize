@@ -71,7 +71,10 @@ public class AllsagesbookService implements IAllsagesbook {
 
     @Override
     public JSONObject getRank() {
-        return null;
+        RemoteMsg remoteMsg = new RemoteMsg();
+        remoteMsg.setUrl("http://www.allsagesbooks.com/top10/index.asp");
+        remoteMsg.setCharset("GBK");
+        return analysisRankHtml(remoteCallService.remoteCallByRequestGET(remoteMsg));
     }
 
     /**
@@ -87,6 +90,22 @@ public class AllsagesbookService implements IAllsagesbook {
         JSONObject isbnMess = new JSONObject();
         for (int i = 0;i < items.size() ; i = i + 2) {
             isbnMess.put(items.get(i + 1).text(), items.get(i).text());
+        }
+
+        return isbnMess;
+    }
+
+    /**
+     * 解析返回排行榜的的html
+     */
+    private JSONObject analysisRankHtml(String html) {
+        Document document = Jsoup.parse(html);
+
+        //选择color属性为#000080，标签为font
+        Elements items = document.select("font[color=#000080]");
+        JSONObject isbnMess = new JSONObject();
+        for (int i = 0;i < items.size() ; i = i + 2) {
+            isbnMess.put(items.get(i).text(), items.get(i + 1).text());
         }
 
         return isbnMess;

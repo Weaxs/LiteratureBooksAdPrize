@@ -6,6 +6,8 @@ import java.util.Map;
 
 public interface IRemoteCallService {
 
+    String remoteCallByRequestGET(RemoteMsg remoteMsg);
+
     String remoteCallByRequestPOST(RemoteMsg remoteMsg);
 
     String remoteCallByHttpClientPOST(RemoteMsg remoteMsg);

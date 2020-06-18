@@ -28,4 +28,10 @@ public class AllsagesbookTest {
         JSONObject re = allsagesbook.getBookMessageByRequest(book);
         logger.info(re.toJSONString());
     }
+
+    @Test
+    public void getRank() {
+        JSONObject rank = allsagesbook.getRank();
+        logger.info(rank.toJSONString());
+    }
 }

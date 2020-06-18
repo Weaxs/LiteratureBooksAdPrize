@@ -42,6 +42,16 @@ public class RemoteCallServiceImpl implements IRemoteCallService {
     protected static final int SOCKET_TIMEOUT = 10000; // 10S
 
     @Override
+    public String remoteCallByRequestGET(RemoteMsg remoteMsg) {
+        try {
+            return Request.Get(remoteMsg.getUrl()).execute().returnContent().asString(Charset.forName(remoteMsg.getCharset()));
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+            throw new RuntimeException("请求接口出错！", e);
+        }
+    }
+
+    @Override
     public String remoteCallByRequestPOST(RemoteMsg remoteMsg) {
         try {
             return Request.Post(remoteMsg.getUrl()).bodyString(remoteMsg.getRequestBody(), ContentType.create(remoteMsg.getContentType(), remoteMsg.getCharset()))
