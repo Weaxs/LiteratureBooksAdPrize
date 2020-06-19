@@ -1,3 +1,4 @@
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,6 +10,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.weaxsey.QuickStart;
 import org.weaxsey.book.allsagesBooks.api.IAllsagesbook;
 import org.weaxsey.book.domain.BookMessage;
+import org.weaxsey.redis.RedisClient;
+
+import java.util.Map;
 
 @SpringBootTest(classes = QuickStart.class)
 @RunWith(SpringRunner.class)
@@ -18,6 +22,8 @@ public class AllsagesbookTest {
 
     @Autowired
     private IAllsagesbook allsagesbook;
+    @Autowired
+    private RedisClient<String> redisClient;
 
     @Test
     public void getBookTest() {
@@ -31,7 +37,7 @@ public class AllsagesbookTest {
 
     @Test
     public void getRank() {
-        JSONObject rank = allsagesbook.getRank();
-        logger.info(rank.toJSONString());
+        Map<Double, String> redisReturn = allsagesbook.getRank();
+        logger.info("");
     }
 }

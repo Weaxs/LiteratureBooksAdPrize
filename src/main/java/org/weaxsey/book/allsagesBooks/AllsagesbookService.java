@@ -8,10 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.weaxsey.book.allsagesBooks.api.IAllsagesbook;
 import org.weaxsey.book.domain.BookMessage;
+import org.weaxsey.redis.RedisClient;
 import org.weaxsey.remotecall.api.IRemoteCallService;
 import org.weaxsey.remotecall.domain.RemoteMsg;
 import org.weaxsey.utils.RequestSpliceUtils;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,6 +24,10 @@ public class AllsagesbookService implements IAllsagesbook {
 
     @Autowired
     private IRemoteCallService remoteCallService;
+    @Autowired
+    private RedisClient<String> redisClient;
+
+    private static SimpleDateFormat rankDateFormat = new SimpleDateFormat("yyyy/MM");
 
     public JSONObject getBookMessageByRequest(BookMessage book) {
 
@@ -70,11 +78,21 @@ public class AllsagesbookService implements IAllsagesbook {
     }
 
     @Override
-    public JSONObject getRank() {
-        RemoteMsg remoteMsg = new RemoteMsg();
-        remoteMsg.setUrl("http://www.allsagesbooks.com/top10/index.asp");
-        remoteMsg.setCharset("GBK");
-        return analysisRankHtml(remoteCallService.remoteCallByRequestGET(remoteMsg));
+    public Map<Double, String> getRank() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.MONTH, -1);//当前时间前去一个月，即一个月前的时间
+        String rankDate = rankDateFormat.format(calendar.getTime());
+        Map<Double, String> redisRank = redisClient.getZSetBySocre("allsagesbook_rank_" + rankDate, 1D, 10D);
+        if (redisRank == null) {
+            RemoteMsg remoteMsg = new RemoteMsg();
+            remoteMsg.setUrl("http://www.allsagesbooks.com/top10/index.asp");
+            remoteMsg.setCharset("GBK");
+            redisRank = analysisRankHtml(remoteCallService.remoteCallByRequestGET(remoteMsg));
+            //存到缓存
+            redisClient.addZSetConllection("allsagesbook_rank_" + rankDate, redisRank);
+        }
+        return redisRank;
     }
 
     /**
@@ -98,14 +116,14 @@ public class AllsagesbookService implements IAllsagesbook {
     /**
      * 解析返回排行榜的的html
      */
-    private JSONObject analysisRankHtml(String html) {
+    private Map<Double, String> analysisRankHtml(String html) {
         Document document = Jsoup.parse(html);
 
         //选择color属性为#000080，标签为font
         Elements items = document.select("font[color=#000080]");
-        JSONObject isbnMess = new JSONObject();
+        Map<Double, String> isbnMess = new HashMap<>();
         for (int i = 0;i < items.size() ; i = i + 2) {
-            isbnMess.put(items.get(i).text(), items.get(i + 1).text());
+            isbnMess.put(Double.valueOf(items.get(i).text()), items.get(i + 1).text());
         }
 
         return isbnMess;
