@@ -10,7 +10,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
-@EnableCaching
+@EnableCaching//启用缓存
 //@ConditionalOnClass(RedisOperations.class)
 //@EnableConfigurationProperties(RedisProperties.class)
 //@Import({ LettuceConnectionConfiguration.class, JedisConnectionConfiguration.class })

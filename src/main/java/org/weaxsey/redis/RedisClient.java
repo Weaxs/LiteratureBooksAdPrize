@@ -8,17 +8,22 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class RedisClient<V> {
 
     @Autowired
     private RedisTemplate<String, V> redisTemplate;
+
+    public Boolean setExpire(String key, long timeout, TimeUnit unit) {
+        return redisTemplate.expire(key, timeout, unit);
+    }
+
+    public Boolean setExpire(String key, Date date) {
+        return redisTemplate.expireAt(key, date);
+    }
 
     public Boolean addZSetStandalone(String key, V value, Double socre) {
         return redisTemplate.opsForZSet().add(key, value, socre);
