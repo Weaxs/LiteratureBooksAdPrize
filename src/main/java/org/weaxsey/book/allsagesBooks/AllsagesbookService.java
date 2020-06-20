@@ -18,6 +18,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class AllsagesbookService implements IAllsagesbook {
@@ -84,13 +85,13 @@ public class AllsagesbookService implements IAllsagesbook {
         calendar.add(Calendar.MONTH, -1);//当前时间前去一个月，即一个月前的时间
         String rankDate = rankDateFormat.format(calendar.getTime());
         Map<Double, String> redisRank = redisClient.getZSetBySocre("allsagesbook_rank_" + rankDate, 1D, 10D);
-        if (redisRank == null) {
+        if (redisRank == null || redisRank.size() <= 0) {
             RemoteMsg remoteMsg = new RemoteMsg();
             remoteMsg.setUrl("http://www.allsagesbooks.com/top10/index.asp");
             remoteMsg.setCharset("GBK");
             redisRank = analysisRankHtml(remoteCallService.remoteCallByRequestGET(remoteMsg));
             //存到缓存
-            redisClient.addZSetConllection("allsagesbook_rank_" + rankDate, redisRank);
+            redisClient.addZSetConllection("allsagesbook_rank_" + rankDate, redisRank, 90L, TimeUnit.DAYS);
         }
         return redisRank;
     }
