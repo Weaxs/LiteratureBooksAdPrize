@@ -38,6 +38,6 @@ public class AllsagesbookTest {
     @Test
     public void getRank() {
         Map<Double, String> redisReturn = allsagesbook.getRank();
-        logger.info("");
+        logger.info(JSON.toJSONString(redisReturn));
     }
 }
