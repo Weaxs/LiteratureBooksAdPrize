@@ -11,9 +11,6 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
 @EnableCaching//启用缓存
-//@ConditionalOnClass(RedisOperations.class)
-//@EnableConfigurationProperties(RedisProperties.class)
-//@Import({ LettuceConnectionConfiguration.class, JedisConnectionConfiguration.class })
 public class RedisConfiguration extends CachingConfigurerSupport {
 
     @Bean
