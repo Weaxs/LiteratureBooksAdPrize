@@ -14,7 +14,7 @@ public class RemoteMsg {
     private Map<String, String> headParamMap;
     private String requestBody;
     private String contentType;
-    private String charset;
+    private String charset = "utf-8";
     private String requestMethod;
     private boolean openSSL;
 
