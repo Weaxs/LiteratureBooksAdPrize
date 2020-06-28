@@ -81,7 +81,7 @@ public class BookerPizesServiceImpl implements IPrizesService {
             if (!bookNameitems.get(i).text().startsWith("<img") && !StringUtils.isEmpty(bookNameitems.get(i).text())) {
                 JSONObject book = new JSONObject();
                 book.put("book", bookNameitems.get(i).text());
-                if (!authorNameItems.get(j).text().contains("\\(")) {
+                if (!authorNameItems.get(j).text().contains("(")) {
                     j++;
                     continue;
                 }
