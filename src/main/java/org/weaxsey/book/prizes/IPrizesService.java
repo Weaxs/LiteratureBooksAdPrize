@@ -1,14 +1,15 @@
 package org.weaxsey.book.prizes;
 
-import com.alibaba.fastjson.JSONArray;
+import org.weaxsey.book.domain.BookMessage;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 
 public interface IPrizesService {
 
     static SimpleDateFormat yearDateFormat = new SimpleDateFormat("yyyy");
 
-    public JSONArray getWinner(Calendar calendar);
+    public List<BookMessage> getWinner(Calendar calendar);
 
 }

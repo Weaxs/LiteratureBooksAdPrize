@@ -14,6 +14,8 @@ public class BookMessage {
     private String publishPrefix = "";
     //库存状态
     private String isHave = "";
+    //获奖年
+    private String winnerYear;
 
     public String getBookName() {
         return bookName;
@@ -61,5 +63,13 @@ public class BookMessage {
 
     public void setIsHave(String isHave) {
         this.isHave = isHave;
+    }
+
+    public String getWinnerYear() {
+        return winnerYear;
+    }
+
+    public void setWinnerYear(String winnerYear) {
+        this.winnerYear = winnerYear;
     }
 }
