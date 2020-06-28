@@ -105,6 +105,10 @@ public class RedisClient<V> {
         return redisTemplate.<HK, HV>opsForHash().entries(key);
     }
 
+    public <HK, HV> List<HV> getMultiHash(String key, List<HK> fields) {
+        return redisTemplate.<HK, HV>opsForHash().multiGet(key, fields);
+    }
+
     // List
 
     public void addListIndex(String key, Long index, V value) {

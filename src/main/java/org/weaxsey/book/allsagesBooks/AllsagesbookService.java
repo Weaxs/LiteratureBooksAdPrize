@@ -91,7 +91,7 @@ public class AllsagesbookService implements IAllsagesbook {
             remoteMsg.setCharset("GBK");
             redisRank = analysisRankHtml(remoteCallService.remoteCallByRequestGET(remoteMsg));
             //存到缓存
-            redisClient.addZSetConllection("allsagesbook_rank_" + rankDate, redisRank, 90L, TimeUnit.DAYS);
+            Long zset = redisClient.addZSetConllection("allsagesbook_rank_" + rankDate, redisRank, 90L, TimeUnit.DAYS);
         }
         return redisRank;
     }
