@@ -11,15 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 
+import static org.weaxsey.config.UserDefThreadPoolExecutor.poolExecutor;
+
 @Service
 public class MultiTranslateServiceImpl implements IMultiTranslateService {
 
     private static final Logger logger = LoggerFactory.getLogger(MultiTranslateServiceImpl.class);
-
-    private final static ThreadPoolExecutor poolExecutor;
-    static {
-        poolExecutor = new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors() , Runtime.getRuntime().availableProcessors() * 2, 120L, TimeUnit.SECONDS, new ArrayBlockingQueue(10000));
-    }
 
 //    @Autowired
 //    @Qualifier("baidu")

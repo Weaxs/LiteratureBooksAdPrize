@@ -1,4 +1,4 @@
-package org.weaxsey.book.prizes;
+package org.weaxsey.book.prizes.api;
 
 import org.weaxsey.book.domain.BookMessage;
 
@@ -7,8 +7,6 @@ import java.util.Calendar;
 import java.util.List;
 
 public interface IPrizesService {
-
-    static SimpleDateFormat yearDateFormat = new SimpleDateFormat("yyyy");
 
     public List<BookMessage> getWinner(Calendar calendar);
 

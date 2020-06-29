@@ -1,4 +1,4 @@
-package org.weaxsey.book.prizes.theBookerPrizes;
+package org.weaxsey.book.prizes;
 
 import com.alibaba.fastjson.JSONObject;
 import org.jsoup.Jsoup;
@@ -7,32 +7,31 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.weaxsey.book.domain.BookMessage;
-import org.weaxsey.book.prizes.IPrizesService;
-import org.weaxsey.redis.RedisClient;
-import org.weaxsey.remotecall.api.IRemoteCallService;
+import org.weaxsey.book.prizes.api.AbstractPrizesServiceImpl;
 import org.weaxsey.remotecall.domain.RemoteMsg;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
-@Component("theBookerPizes")
-public class BookerPizesServiceImpl implements IPrizesService {
-
-    private static String url = "https://thebookerprizes.com/fiction/";
+@Service("theBookerPizes")
+public class BookerPizesServiceImpl extends AbstractPrizesServiceImpl {
 
     private static final Logger logger = LoggerFactory.getLogger(BookerPizesServiceImpl.class);
-
-    @Autowired
-    private IRemoteCallService remoteCallService;
-    @Autowired
-    private RedisClient<String> redisClient;
 
     @Override
     public List<BookMessage> getWinner(Calendar calendar) {
         String year = yearDateFormat.format(calendar.getTime());
+
+        if (Integer.parseInt(year) < 1969)
+            throw new RuntimeException("The first Booker pize began in 1969.");
+        if (calendar.getTime().after(new Date()))
+            throw new RuntimeException("The " + year +" Booker pize hasn't awarded.");
+
         List<String> years = new ArrayList<>();
         Boolean isThisYear = isThisYear(year);
         if (isThisYear) {//Maybe the winners have not been announced this year
@@ -51,7 +50,7 @@ public class BookerPizesServiceImpl implements IPrizesService {
 
         logger.info("The " + year + " Booker Pizes don't store in Redis");
         RemoteMsg remoteMsg = new RemoteMsg();
-        remoteMsg.setUrl(url + year);
+        remoteMsg.setUrl(bookerUrl + year);
         String html = remoteCallService.remoteCallByRequestGET(remoteMsg);
         String winnerYear = getWinnerYear(html);
         List<BookMessage> prizeMsg = getPrizeMsg(html);
@@ -59,7 +58,7 @@ public class BookerPizesServiceImpl implements IPrizesService {
             book.setWinnerYear(winnerYear);
         }
         redisClient.addHashStandalone("theBookerPizes", winnerYear, prizeMsg);
-        logger.info("The " + year + " Booker Pizes:" + JSONObject.toJSONString(prizeMsg));
+        logger.info("The " + winnerYear + " Booker Pizes:" + JSONObject.toJSONString(prizeMsg));
 
         return prizeMsg;
     }
@@ -83,29 +82,26 @@ public class BookerPizesServiceImpl implements IPrizesService {
         Document document = Jsoup.parse(html);
         //查询便签<a>的href属性中以/books开头的
         Elements bookNameitems = document.select("a[href~=^/books]");
-        Elements authorNameItems = document.select("strong");
+        Elements authorNameItems = document.select("strong,b");
         for (int i = 0, j = 0; i < bookNameitems.size() && j < authorNameItems.size();i++) {
             if (!bookNameitems.get(i).text().startsWith("<img") && !StringUtils.isEmpty(bookNameitems.get(i).text())) {
                 BookMessage book = new BookMessage();
                 book.setBookName(bookNameitems.get(i).text());
-                if (!authorNameItems.get(j).text().contains("(")) {
-                    j++;
+                if (!authorNameItems.get(j).text().contains("(") && authorNameItems.get(j).text().contains("By")) {
+                    book.setAuthor(authorNameItems.get(j++).text().substring(3));
+                    book.setPublisher(authorNameItems.get(j).text().substring(13));
+                    prizeMsg.add(book);
                     continue;
+                } else if (authorNameItems.get(j).text().contains("(")) {
+                    String[] authorAndPublisher = authorNameItems.get(j).text().split("\\(");
+                    book.setAuthor(authorAndPublisher[0]);
+                    book.setPublisher(authorAndPublisher[1].substring(0, authorAndPublisher[1].length() -2));
+                    prizeMsg.add(book);
                 }
-                String[] authorAndPublisher = authorNameItems.get(j).text().split("\\(");
-                book.setAuthor(authorAndPublisher[0]);
-                book.setPublisher(authorAndPublisher[1].substring(0, authorAndPublisher[1].length() -2));
-                prizeMsg.add(book);
                 j++;
             }
         }
         return prizeMsg;
     }
-
-    private Boolean isThisYear(String year) {
-        return year.equals(yearDateFormat.format(Calendar.getInstance().getTime()));
-    }
-
-
 
 }
