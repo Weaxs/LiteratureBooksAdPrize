@@ -1,0 +1,114 @@
+// 用于多项目构建，为所有项目提供共同所需依赖库
+allprojects {
+    repositories {
+        // 阿里提供的库
+        maven {
+            url 'https://maven.aliyun.com/repository/google'
+        }
+        maven {
+            url 'https://maven.aliyun.com/repository/gradle-plugin'
+        }
+        maven {
+            url 'https://maven.aliyun.com/repository/public'
+        }
+        maven {
+            url 'https://maven.aliyun.com/repository/jcenter'
+        }
+        jcenter() // JFrog公司提供的仓库
+        google() // Google公司提供的仓库
+        mavenCentral() // Sonatype公司提供的中央库
+        mavenLocal() // 本机上的仓库
+    }
+}
+// gradle脚本自身需要使用的资源(依赖项、第三方插件、maven仓库地址)
+buildscript {
+    ext.spring_boot_version = '2.3.1.RELEASE'
+    repositories {
+        // 阿里提供的库
+        maven {
+            url 'https://maven.aliyun.com/repository/google'
+        }
+        maven {
+            url 'https://maven.aliyun.com/repository/gradle-plugin'
+        }
+        maven {
+            url 'https://maven.aliyun.com/repository/public'
+        }
+        maven {
+            url 'https://maven.aliyun.com/repository/jcenter'
+        }
+        jcenter() // JFrog公司提供的仓库
+        google() // Google公司提供的仓库
+        mavenCentral() // Sonatype公司提供的中央库
+        mavenLocal() // 本机上的仓库
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:$spring_boot_version")
+    }
+}
+group = 'org.weaxsey'
+version = '1.0-SNAPSHOT'
+
+// 引入Gradle插件   apply plugin(二进制插件)   apply from(应用脚本插件)
+apply plugin: 'java'
+//apply plugin: 'eclipse'
+//apply plugin: 'idea'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'war'
+
+// 构建wrapper (不知道为什么不行)
+//wrapper {
+//    gradleVersion = '6.5'
+//    distributionBase='GRADLE_USER_HOME'
+//    distributionPath='wrapper/dists'
+//    distributionUrl= "https://services.gradle.org/distributions/gradle-$gradleVersion-bin.zip"
+//}
+
+repositories {
+    // 阿里提供的库
+    maven {
+        url 'https://maven.aliyun.com/repository/google'
+    }
+    maven {
+        url 'https://maven.aliyun.com/repository/gradle-plugin'
+    }
+    maven {
+        url 'https://maven.aliyun.com/repository/public'
+    }
+    maven {
+        url 'https://maven.aliyun.com/repository/jcenter'
+    }
+    jcenter() // JFrog公司提供的仓库
+    google() // Google公司提供的仓库
+    mavenCentral() // Sonatype公司提供的中央库
+    mavenLocal() // 本机上的仓库
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+// 自定义属性
+ext {
+//    fastjson = '1.2.62'
+//    jsoup    = '1.12.1'
+    var = [
+            fastjson    : '1.2.62',
+            jsoup       : '1.12.1',
+            springboot  : '2.3.1.RELEASE'
+    ]
+}
+
+dependencies {
+    compile("org.springframework.boot:spring-boot-starter-web")
+    compile("org.springframework.boot:spring-boot-starter-logging")
+    compile("org.springframework.boot:spring-boot-starter-data-redis")
+    compile("org.apache.httpcomponents:httpclient")
+    compile("org.apache.httpcomponents:fluent-hc")
+//    compile("com.alibaba:fastjson:$fastjson")
+//    compile("org.jsoup:jsoup:$jsoup")
+    compile("com.alibaba:fastjson:$var.fastjson")
+    compile("org.jsoup:jsoup:$var.jsoup")
+
+    testCompile("org.springframework.boot:spring-boot-starter-test")
+}
