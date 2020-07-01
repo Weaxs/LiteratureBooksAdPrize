@@ -39,10 +39,11 @@ public class RemoteCallServiceImpl implements IRemoteCallService {
 
     private static final Logger logger = LoggerFactory.getLogger(RemoteCallServiceImpl.class);
 
-    protected static final int SOCKET_TIMEOUT = 10000; // 10S
+    // 10S
+    protected static final int SOCKET_TIMEOUT = 10000;
 
     @Override
-    public String remoteCallByRequestGET(RemoteMsg remoteMsg) {
+    public String remoteCallByRequestGet(RemoteMsg remoteMsg) {
         try {
             return Request.Get(remoteMsg.getUrl()).execute().returnContent().asString(Charset.forName(remoteMsg.getCharset()));
         } catch (IOException e) {
@@ -52,7 +53,7 @@ public class RemoteCallServiceImpl implements IRemoteCallService {
     }
 
     @Override
-    public String remoteCallByRequestPOST(RemoteMsg remoteMsg) {
+    public String remoteCallByRequestPost(RemoteMsg remoteMsg) {
         try {
             return Request.Post(remoteMsg.getUrl()).bodyString(remoteMsg.getRequestBody(), ContentType.create(remoteMsg.getContentType(), remoteMsg.getCharset()))
                     .execute().returnContent().asString(Charset.forName(remoteMsg.getCharset()));
@@ -64,7 +65,7 @@ public class RemoteCallServiceImpl implements IRemoteCallService {
     }
 
     @Override
-    public String remoteCallByHttpClientPOST(RemoteMsg remoteMsg) {
+    public String remoteCallByHttpClientPost(RemoteMsg remoteMsg) {
 
         //1.组装URI
         List<NameValuePair> params = new ArrayList<NameValuePair>();
@@ -121,23 +122,23 @@ public class RemoteCallServiceImpl implements IRemoteCallService {
     }
 
     @Override
-    public String remoteCallByHttpURLConnectionPOST(RemoteMsg remoteMsg) {
+    public String remoteCallByHttpUrlConnectionPost(RemoteMsg remoteMsg) {
 
         try {
-
-            URL uri = new URL(remoteMsg.getUrl()); // 创建URL对象
+            // 创建URL对象
+            URL uri = new URL(remoteMsg.getUrl());
             HttpURLConnection conn = (HttpURLConnection) uri.openConnection();
 
-            if (remoteMsg.getOpenSSL()) {
+            if (remoteMsg.getOpenssl()) {
                 // 设置SSLContext
                 SSLContext sslcontext = SSLContext.getInstance("TLS");
-                sslcontext.init(null, new TrustManager[] { myX509TrustManager }, null);
+                sslcontext.init(null, new TrustManager[] { MY_X509_TRUST_MANAGER }, null);
                 if (conn instanceof HttpsURLConnection) {
                     ((HttpsURLConnection) conn).setSSLSocketFactory(sslcontext.getSocketFactory());
                 }
             }
-
-            conn.setConnectTimeout(SOCKET_TIMEOUT); // 设置相应超时
+            // 设置相应超时
+            conn.setConnectTimeout(SOCKET_TIMEOUT);
             conn.setRequestMethod(remoteMsg.getRequestMethod());
             int statusCode = conn.getResponseCode();
             if (statusCode != HttpURLConnection.HTTP_OK) {
@@ -155,9 +156,11 @@ public class RemoteCallServiceImpl implements IRemoteCallService {
 
             String text = builder.toString();
 
-            close(br); // 关闭数据流
-            close(is); // 关闭数据流
-            conn.disconnect(); // 断开连接
+            // 关闭数据流
+            close(br);
+            close(is);
+            // 断开连接
+            conn.disconnect();
 
             return text;
 
@@ -173,7 +176,7 @@ public class RemoteCallServiceImpl implements IRemoteCallService {
         return null;
     }
 
-    private final static TrustManager myX509TrustManager = new X509TrustManager() {
+    private final static TrustManager MY_X509_TRUST_MANAGER = new X509TrustManager() {
 
         @Override
         public X509Certificate[] getAcceptedIssuers() {

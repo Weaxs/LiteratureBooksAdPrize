@@ -36,7 +36,8 @@ public class RequestSpliceUtils {
         int i = 0;
         for (Map.Entry<String, String> entry: params.entrySet()) {
             String value = entry.getValue();
-            if (value == null) { // 过滤空的key
+            // 过滤空的key
+            if (value == null) {
                 continue;
             }
             if (i != 0) {

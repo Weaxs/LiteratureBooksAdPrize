@@ -4,12 +4,12 @@ import org.weaxsey.remotecall.domain.RemoteMsg;
 
 public interface IRemoteCallService {
 
-    String remoteCallByRequestGET(RemoteMsg remoteMsg);
+    String remoteCallByRequestGet(RemoteMsg remoteMsg);
 
-    String remoteCallByRequestPOST(RemoteMsg remoteMsg);
+    String remoteCallByRequestPost(RemoteMsg remoteMsg);
 
-    String remoteCallByHttpClientPOST(RemoteMsg remoteMsg);
+    String remoteCallByHttpClientPost(RemoteMsg remoteMsg);
 
-    String remoteCallByHttpURLConnectionPOST(RemoteMsg remoteMsg);
+    String remoteCallByHttpUrlConnectionPost(RemoteMsg remoteMsg);
 
 }

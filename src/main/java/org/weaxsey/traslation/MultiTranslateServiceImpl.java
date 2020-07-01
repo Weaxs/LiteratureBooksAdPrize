@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 
-import static org.weaxsey.config.UserDefThreadPoolExecutor.poolExecutor;
+import static org.weaxsey.config.UserDefThreadPoolExecutor.POOL_EXECUTOR;
 
 @Service
 public class MultiTranslateServiceImpl implements IMultiTranslateService {
@@ -33,7 +33,7 @@ public class MultiTranslateServiceImpl implements IMultiTranslateService {
         List<Callable<String>> callables = multiTranslateCallables(message);
         try {
             //invokeAny方法会对线程进行提交
-            ans = poolExecutor.invokeAny(callables);
+            ans = POOL_EXECUTOR.invokeAny(callables);
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }

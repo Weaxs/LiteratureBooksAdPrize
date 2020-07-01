@@ -16,7 +16,7 @@ public class RemoteMsg {
     private String contentType;
     private String charset = "utf-8";
     private String requestMethod;
-    private boolean openSSL;
+    private boolean openssl;
 
     public String getHost() {
         return host;
@@ -98,11 +98,11 @@ public class RemoteMsg {
         this.requestMethod = requestMethod;
     }
 
-    public boolean getOpenSSL() {
-        return openSSL;
+    public boolean getOpenssl() {
+        return openssl;
     }
 
-    public void setOpenSSL(boolean openSSL) {
-        this.openSSL = openSSL;
+    public void setOpenssl(boolean openssl) {
+        this.openssl = openssl;
     }
 }

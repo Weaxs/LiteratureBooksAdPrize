@@ -15,6 +15,9 @@ public abstract class AbstractPrizesServiceImpl implements IPrizesService {
 
     protected static String nobelUrl = "https://www.nobelprize.org/prizes/literature/";
 
+    protected static int BOOKER_PRIZES_START_YEAR = 1969;
+    protected static int Nobel_PRIZES_START_YEAR = 1901;
+
     @Autowired
     protected IRemoteCallService remoteCallService;
     @Autowired

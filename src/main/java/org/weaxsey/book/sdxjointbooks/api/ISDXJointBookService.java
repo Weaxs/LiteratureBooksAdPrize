@@ -1,4 +1,4 @@
-package org.weaxsey.book.sdxJointBooks.api;
+package org.weaxsey.book.sdxjointbooks.api;
 
 import com.alibaba.fastjson.JSONObject;
 

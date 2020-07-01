@@ -27,14 +27,17 @@ public class BookerPizesServiceImpl extends AbstractPrizesServiceImpl {
     public List<BookMessage> getWinner(Calendar calendar) {
         String year = yearDateFormat.format(calendar.getTime());
 
-        if (Integer.parseInt(year) < 1969)
+        if (Integer.parseInt(year) < BOOKER_PRIZES_START_YEAR) {
             throw new RuntimeException("The first Booker pize began in 1969.");
-        if (calendar.getTime().after(new Date()))
-            throw new RuntimeException("The " + year +" Booker pize hasn't awarded.");
+        }
+        if (calendar.getTime().after(new Date())) {
+            throw new RuntimeException("The " + year + " Booker pize hasn't awarded.");
+        }
 
         List<String> years = new ArrayList<>();
         Boolean isThisYear = isThisYear(year);
-        if (isThisYear) {//Maybe the winners have not been announced this year
+        //Maybe the winners have not been announced this year
+        if (isThisYear) {
             int tmp = Integer.parseInt(year);
             years.add(year);
             years.add(String.valueOf(tmp - 1));
@@ -43,15 +46,17 @@ public class BookerPizesServiceImpl extends AbstractPrizesServiceImpl {
         }
 
         List<List<BookMessage>> prizeMsgs = redisClient.<String, List<BookMessage>>getMultiHash("theBookerPizes", years);
-        if (prizeMsgs.get(0) != null && prizeMsgs.get(0).size() > 0)
+        if (prizeMsgs.get(0) != null && prizeMsgs.get(0).size() > 0) {
             return prizeMsgs.get(0);
-        if (isThisYear && prizeMsgs.get(1) != null && prizeMsgs.get(1).size() > 0)
+        }
+        if (isThisYear && prizeMsgs.get(1) != null && prizeMsgs.get(1).size() > 0) {
             return prizeMsgs.get(1);
+        }
 
         logger.info("The " + year + " Booker Pizes don't store in Redis");
         RemoteMsg remoteMsg = new RemoteMsg();
         remoteMsg.setUrl(bookerUrl + year);
-        String html = remoteCallService.remoteCallByRequestGET(remoteMsg);
+        String html = remoteCallService.remoteCallByRequestGet(remoteMsg);
         String winnerYear = getWinnerYear(html);
         List<BookMessage> prizeMsg = getPrizeMsg(html);
         for (BookMessage book:prizeMsg) {

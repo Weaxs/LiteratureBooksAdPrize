@@ -1,4 +1,4 @@
-package org.weaxsey.book.allsagesBooks.api;
+package org.weaxsey.book.allsagesbooks.api;
 
 import com.alibaba.fastjson.JSONObject;
 import org.weaxsey.book.domain.BookMessage;

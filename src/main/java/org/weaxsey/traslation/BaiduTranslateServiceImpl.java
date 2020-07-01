@@ -26,6 +26,9 @@ public class BaiduTranslateServiceImpl implements ITranslateService {
 
     private static String BAIDU_TRANSLATE_URL = "https://fanyi-api.baidu.com/api/trans/vip/translate";
 
+    private static Long BAIDU_RESPONSE_SUCCESS = 52000L;
+    private static String BAIDU_RESPONSE_ERRORCODE = "error_code";
+
     @Value("${baidu.translate.secret.appid}")
     private String baiduTranslateAppId;
     @Value("${baidu.translate.secret.key}")
@@ -34,10 +37,11 @@ public class BaiduTranslateServiceImpl implements ITranslateService {
     @Autowired
     private IRemoteCallService remoteCallService;
 
+    @Override
     public String translate(String content) {
         String salt = String.valueOf(System.currentTimeMillis());;
         String sign = MD5Utils.md5(baiduTranslateAppId + content + salt + baiduKey);
-        Map<String, String> requestBody = new HashMap<>();
+        Map<String, String> requestBody = new HashMap<>(7);
         requestBody.put("q", content);
         requestBody.put("from", "auto");
         requestBody.put("to", "auto");
@@ -53,10 +57,11 @@ public class BaiduTranslateServiceImpl implements ITranslateService {
         remoteMsg.setContentType("application/x-www-form-urlencoded");
         remoteMsg.setCharset("UTF-8");
 
-        String tmp = remoteCallService.remoteCallByRequestPOST(remoteMsg);
+        String tmp = remoteCallService.remoteCallByHttpClientPost(remoteMsg);
         JSONObject   result = JSONObject.parseObject(tmp);
-        if (result.containsKey("error_code") && result.getLong("error_code") != 52000L)
+        if (result.containsKey(BAIDU_RESPONSE_ERRORCODE) &&  BAIDU_RESPONSE_SUCCESS.equals(result.getLong(BAIDU_RESPONSE_ERRORCODE))) {
             throw new RuntimeException(result.getString("error_msg"));
+        }
 
         JSONArray transResult = result.getJSONArray("trans_result");
         JSONObject ans = JSON.parseObject(JSON.toJSONString(transResult.get(0)), JSONObject.class);

@@ -340,8 +340,9 @@ public class RedisClient<V> {
     }
 
     private Map<Double, V> typedTupleSet2Map(@Nullable Set<ZSetOperations.TypedTuple<V>> typedTupleSet) {
-        if (typedTupleSet == null)
+        if (typedTupleSet == null) {
             return null;
+        }
         Map<Double, V> values = new HashMap<>();
         for (ZSetOperations.TypedTuple<V> typedTuple:typedTupleSet) {
             values.put(typedTuple.getScore(), typedTuple.getValue());
