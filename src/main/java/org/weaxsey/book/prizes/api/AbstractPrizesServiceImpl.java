@@ -1,15 +1,15 @@
 package org.weaxsey.book.prizes.api;
 
+import org.apache.http.client.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.weaxsey.redis.RedisClient;
 import org.weaxsey.remotecall.api.IRemoteCallService;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 public abstract class AbstractPrizesServiceImpl implements IPrizesService {
 
-    protected static SimpleDateFormat yearDateFormat = new SimpleDateFormat("yyyy");
+    protected static String YEAR_DATE_FORMAT = "yyyy";
 
     protected static String bookerUrl = "https://thebookerprizes.com/fiction/";
 
@@ -24,7 +24,7 @@ public abstract class AbstractPrizesServiceImpl implements IPrizesService {
     protected RedisClient<String> redisClient;
 
     protected Boolean isThisYear(String year) {
-        return year.equals(yearDateFormat.format(Calendar.getInstance().getTime()));
+        return year.equals(DateUtils.formatDate(Calendar.getInstance().getTime(), YEAR_DATE_FORMAT));
     }
 
 }

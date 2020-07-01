@@ -1,6 +1,7 @@
 package org.weaxsey.book.prizes;
 
 import com.alibaba.fastjson.JSONObject;
+import org.apache.http.client.utils.DateUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -25,7 +26,7 @@ public class BookerPizesServiceImpl extends AbstractPrizesServiceImpl {
 
     @Override
     public List<BookMessage> getWinner(Calendar calendar) {
-        String year = yearDateFormat.format(calendar.getTime());
+        String year = DateUtils.formatDate(calendar.getTime(), YEAR_DATE_FORMAT);
 
         if (Integer.parseInt(year) < BOOKER_PRIZES_START_YEAR) {
             throw new RuntimeException("The first Booker pize began in 1969.");
