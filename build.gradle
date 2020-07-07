@@ -93,7 +93,7 @@ ext {
 //    fastjson = '1.2.62'
 //    jsoup    = '1.12.1'
     var = [
-            fastjson    : '1.2.62',
+            fastjson    : '1.2.69',
             jsoup       : '1.12.1',
             springboot  : '2.3.1.RELEASE'
     ]
