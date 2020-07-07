@@ -34,7 +34,7 @@ public class PrizesTest {
         Calendar calendar = Calendar.getInstance();
         calendar.set(2020,1,1);
 //        List<BookMessage> ans = theBookerPizes.getWinner(calendar);
-        List<BookMessage> ans = theNobelPizes.getWinner(calendar);
+        List<BookMessage> ans = theBookerPizes.getWinner(calendar);
         logger.info(JSON.toJSONString(ans));
 
     }
