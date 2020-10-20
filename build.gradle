@@ -95,7 +95,8 @@ ext {
     var = [
             fastjson    : '1.2.72',
             jsoup       : '1.12.1',
-            springboot  : '2.3.1.RELEASE'
+            springboot  : '2.3.1.RELEASE',
+            mybatis     : '2.1.3'
     ]
 }
 
@@ -109,6 +110,8 @@ dependencies {
 //    compile("org.jsoup:jsoup:$jsoup")
     compile("com.alibaba:fastjson:$var.fastjson")
     compile("org.jsoup:jsoup:$var.jsoup")
+    compile("org.mybatis.spring.boot:mybatis-spring-boot-starter:$var.mybatis")
+    runtime("mysql:mysql-connector-java")
 
     testCompile("org.springframework.boot:spring-boot-starter-test")
 }
