@@ -11,6 +11,11 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Redis Client
+ *
+ * @author Weaxs
+ */
 @Component
 public class RedisClient<V> {
 

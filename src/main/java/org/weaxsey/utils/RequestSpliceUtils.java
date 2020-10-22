@@ -6,7 +6,16 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Map;
 
+/**
+ * Handle Request Param
+ *
+ * @author Weaxs
+ */
 public class RequestSpliceUtils {
+    private static final String QUESTION_MASK = "?";
+    private static final String AND_MASK = "&";
+    private static final String EQUAL_MASK = "=";
+    private static final String ENCODE = "utf-8";
 
     public static String getUrlWithHeadParamsEncode(String url, Map<String, String> params) {
         return getStringWithParams(url, params, true, true);
@@ -26,10 +35,10 @@ public class RequestSpliceUtils {
         StringBuilder builder = new StringBuilder();
         if (isHead) {
             builder.append(url);
-            if (url.contains("?")) {
-                builder.append("&");
+            if (url.contains(QUESTION_MASK)) {
+                builder.append(AND_MASK);
             } else {
-                builder.append("?");
+                builder.append(QUESTION_MASK);
             }
         }
 
@@ -41,10 +50,10 @@ public class RequestSpliceUtils {
                 continue;
             }
             if (i != 0) {
-                builder.append('&');
+                builder.append(AND_MASK);
             }
             builder.append(entry.getKey());
-            builder.append('=');
+            builder.append(EQUAL_MASK);
             if (encode) {
                 builder.append(encode(value));
             } else {
@@ -69,7 +78,7 @@ public class RequestSpliceUtils {
         }
 
         try {
-            return URLEncoder.encode(input, "utf-8");
+            return URLEncoder.encode(input, ENCODE);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }

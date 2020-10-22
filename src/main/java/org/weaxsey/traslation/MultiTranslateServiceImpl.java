@@ -13,13 +13,16 @@ import java.util.concurrent.*;
 
 import static org.weaxsey.config.UserDefThreadPoolExecutor.POOL_EXECUTOR;
 
+/**
+ * Multi Translate
+ *
+ * @author Weaxs
+ */
 @Service
 public class MultiTranslateServiceImpl implements IMultiTranslateService {
 
     private static final Logger logger = LoggerFactory.getLogger(MultiTranslateServiceImpl.class);
 
-//    @Autowired
-//    @Qualifier("baidu")
     @Resource(name = "baidu")
     private ITranslateService baiduService;
     @Resource(name = "youdao")
@@ -28,7 +31,7 @@ public class MultiTranslateServiceImpl implements IMultiTranslateService {
     private ITranslateService googleService;
 
     @Override
-    public String translate4One(String message) {
+    public String translate(String message) {
         String ans = null;
         List<Callable<String>> callables = multiTranslateCallables(message);
         try {

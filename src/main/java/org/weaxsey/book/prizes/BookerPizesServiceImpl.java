@@ -12,59 +12,69 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.weaxsey.book.domain.BookMessage;
 import org.weaxsey.book.prizes.api.AbstractPrizesServiceImpl;
-import org.weaxsey.remotecall.domain.RemoteMsg;
+import org.weaxsey.remotecall.domain.RequestParam;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import static org.weaxsey.book.constant.CommonConstant.*;
+import static org.weaxsey.book.constant.ErrorMsg.BOOKER_YEAR_SMALL_MSG;
+import static org.weaxsey.book.constant.ErrorMsg.hasNotAwarded;
+
+/**
+ * booker prize
+ *
+ * @author Weaxs
+ */
 @Service("theBookerPizes")
 public class BookerPizesServiceImpl extends AbstractPrizesServiceImpl {
 
     private static final Logger logger = LoggerFactory.getLogger(BookerPizesServiceImpl.class);
+    private static final String BOOKER = "Booker";
 
     @Override
     public List<BookMessage> getWinner(Calendar calendar) {
         String year = DateUtils.formatDate(calendar.getTime(), YEAR_DATE_FORMAT);
 
         if (Integer.parseInt(year) < BOOKER_PRIZES_START_YEAR) {
-            throw new RuntimeException("The first Booker pize began in 1969.");
+            throw new RuntimeException(BOOKER_YEAR_SMALL_MSG);
         }
         if (calendar.getTime().after(new Date())) {
-            throw new RuntimeException("The " + year + " Booker pize hasn't awarded.");
+            throw new RuntimeException(hasNotAwarded(Long.parseLong(year), BOOKER));
         }
 
-        List<String> years = new ArrayList<>();
-        Boolean isThisYear = isThisYear(year);
-        //Maybe the winners have not been announced this year
-        if (isThisYear) {
-            int tmp = Integer.parseInt(year);
-            years.add(year);
-            years.add(String.valueOf(tmp - 1));
-        } else {
-            years.add(year);
-        }
+//        List<String> years = new ArrayList<>();
+//        Boolean isThisYear = isThisYear(year);
+//        //Maybe the winners have not been announced this year
+//        if (isThisYear) {
+//            int tmp = Integer.parseInt(year);
+//            years.add(year);
+//            years.add(String.valueOf(tmp - 1));
+//        } else {
+//            years.add(year);
+//        }
 
-        List<List<BookMessage>> prizeMsgs = redisClient.<String, List<BookMessage>>getMultiHash("theBookerPizes", years);
-        if (prizeMsgs.get(0) != null && prizeMsgs.get(0).size() > 0) {
-            return prizeMsgs.get(0);
-        }
-        if (isThisYear && prizeMsgs.get(1) != null && prizeMsgs.get(1).size() > 0) {
-            return prizeMsgs.get(1);
-        }
+//        List<List<BookMessage>> prizeMsgs = redisClient.getMultiHash(BOOKER_PRIZE_KEY, years);
+//        if (prizeMsgs.get(0) != null && prizeMsgs.get(0).size() > 0) {
+//            return prizeMsgs.get(0);
+//        }
+//        if (isThisYear && prizeMsgs.get(1) != null && prizeMsgs.get(1).size() > 0) {
+//            return prizeMsgs.get(1);
+//        }
+//        logger.info("The " + year + " Booker Pizes don't store in Redis");
 
-        logger.info("The " + year + " Booker Pizes don't store in Redis");
-        RemoteMsg remoteMsg = new RemoteMsg();
-        remoteMsg.setUrl(bookerUrl + year);
-        String html = remoteCallService.remoteCallByRequestGet(remoteMsg);
+        RequestParam requestParam = new RequestParam();
+        requestParam.setUrl(bookerUrl + year);
+        String html = remoteCallService.remoteCallByRequestGet(requestParam);
         String winnerYear = getWinnerYear(html);
         List<BookMessage> prizeMsg = getPrizeMsg(html);
         for (BookMessage book:prizeMsg) {
             book.setWinnerYear(winnerYear);
         }
-        redisClient.addHashStandalone("theBookerPizes", winnerYear, prizeMsg);
-        logger.info("The " + winnerYear + " Booker Pizes:" + JSONObject.toJSONString(prizeMsg));
+//        redisClient.addHashStandalone("theBookerPizes", winnerYear, prizeMsg);
+        logger.info("The {} Booker Pizes: {}", winnerYear, JSONObject.toJSONString(prizeMsg));
 
         return prizeMsg;
     }

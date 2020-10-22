@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 import org.weaxsey.remotecall.api.IRemoteCallService;
-import org.weaxsey.remotecall.domain.RemoteMsg;
+import org.weaxsey.remotecall.domain.RequestParam;
 import org.weaxsey.traslation.api.ITranslateService;
 import org.weaxsey.utils.MD5Utils;
 import org.weaxsey.utils.RequestSpliceUtils;
@@ -18,6 +18,11 @@ import org.weaxsey.utils.RequestSpliceUtils;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Baidu Translate
+ *
+ * @author Weaxs
+ */
 @Service("baidu")
 @PropertySource("classpath:translation.properties")
 public class BaiduTranslateServiceImpl implements ITranslateService {
@@ -51,13 +56,13 @@ public class BaiduTranslateServiceImpl implements ITranslateService {
         requestBody.put("dict", "0");
         String body = RequestSpliceUtils.getBodyWithParam(requestBody);
 
-        RemoteMsg remoteMsg = new RemoteMsg();
-        remoteMsg.setRequestBody(body);
-        remoteMsg.setUrl(BAIDU_TRANSLATE_URL);
-        remoteMsg.setContentType("application/x-www-form-urlencoded");
-        remoteMsg.setCharset("UTF-8");
+        RequestParam requestParam = new RequestParam();
+        requestParam.setRequestBody(body);
+        requestParam.setUrl(BAIDU_TRANSLATE_URL);
+        requestParam.setContentType("application/x-www-form-urlencoded");
+        requestParam.setCharset("UTF-8");
 
-        String tmp = remoteCallService.remoteCallByHttpClientPost(remoteMsg);
+        String tmp = remoteCallService.remoteCallByHttpClientPost(requestParam);
         JSONObject   result = JSONObject.parseObject(tmp);
         if (result.containsKey(BAIDU_RESPONSE_ERRORCODE) &&  BAIDU_RESPONSE_SUCCESS.equals(result.getLong(BAIDU_RESPONSE_ERRORCODE))) {
             throw new RuntimeException(result.getString("error_msg"));

@@ -7,11 +7,18 @@ import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+/**
+ * MD5
+ *
+ * @author Weaxs
+ */
 public class MD5Utils {
 
     private static final Logger logger = LoggerFactory.getLogger(MD5Utils.class);
 
-    // 首先初始化一个字符数组，用来存放每个16进制字符
+    /**
+     * 首先初始化一个字符数组，用来存放每个16进制字符
+     */
     private static final char[] HEXDIGITS = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd',
             'e', 'f' };
 

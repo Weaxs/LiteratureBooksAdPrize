@@ -7,16 +7,14 @@ import org.weaxsey.remotecall.api.IRemoteCallService;
 
 import java.util.Calendar;
 
+import static org.weaxsey.book.constant.CommonConstant.YEAR_DATE_FORMAT;
+
+/**
+ *
+ *
+ * @author Weaxs
+ */
 public abstract class AbstractPrizesServiceImpl implements IPrizesService {
-
-    protected static String YEAR_DATE_FORMAT = "yyyy";
-
-    protected static String bookerUrl = "https://thebookerprizes.com/fiction/";
-
-    protected static String nobelUrl = "https://www.nobelprize.org/prizes/literature/";
-
-    protected static int BOOKER_PRIZES_START_YEAR = 1969;
-    protected static int Nobel_PRIZES_START_YEAR = 1901;
 
     @Autowired
     protected IRemoteCallService remoteCallService;

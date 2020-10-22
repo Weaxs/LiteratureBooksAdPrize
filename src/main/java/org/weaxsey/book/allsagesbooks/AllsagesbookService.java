@@ -11,7 +11,7 @@ import org.weaxsey.book.allsagesbooks.api.IAllsagesbook;
 import org.weaxsey.book.domain.BookMessage;
 import org.weaxsey.redis.RedisClient;
 import org.weaxsey.remotecall.api.IRemoteCallService;
-import org.weaxsey.remotecall.domain.RemoteMsg;
+import org.weaxsey.remotecall.domain.RequestParam;
 import org.weaxsey.utils.RequestSpliceUtils;
 
 import java.util.Calendar;
@@ -20,6 +20,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Allsagesbook
+ *
+ * @author Weaxs
+ */
 @Service
 public class AllsagesbookService implements IAllsagesbook {
 
@@ -28,7 +33,7 @@ public class AllsagesbookService implements IAllsagesbook {
     @Autowired
     private RedisClient<String> redisClient;
 
-    private static int TWO = 2;
+    private static final int TWO = 2;
 
     @Override
     public JSONObject getBookMessageByRequest(BookMessage book) {
@@ -45,12 +50,12 @@ public class AllsagesbookService implements IAllsagesbook {
         String url =  RequestSpliceUtils.getUrlWithHeadParamsNoEncode("http://www.allsagesbooks.com/search/searchResult.asp", params);
         String body = RequestSpliceUtils.getBodyWithParam(bodyMap);
 
-        RemoteMsg remoteMsg = new RemoteMsg();
-        remoteMsg.setCharset("GBK");
-        remoteMsg.setUrl(url);
-        remoteMsg.setRequestBody(body);
-        remoteMsg.setContentType("application/x-www-form-urlencoded");
-        return analysisHtml(remoteCallService.remoteCallByRequestPost(remoteMsg));
+        RequestParam requestParam = new RequestParam();
+        requestParam.setCharset("GBK");
+        requestParam.setUrl(url);
+        requestParam.setRequestBody(body);
+        requestParam.setContentType("application/x-www-form-urlencoded");
+        return analysisHtml(remoteCallService.remoteCallByRequestPost(requestParam));
     }
 
     @Override
@@ -67,16 +72,16 @@ public class AllsagesbookService implements IAllsagesbook {
         bodyMap.put("isHave", "all");
         String body = RequestSpliceUtils.getBodyWithParam(bodyMap);
 
-        RemoteMsg remoteMsg = new RemoteMsg();
-        remoteMsg.setHost("www.allsagesbooks.com");
-        remoteMsg.setPath("/search/searchResult.asp");
-        remoteMsg.setScheme("http");
-        remoteMsg.setHeadParamMap(headParams);
-        remoteMsg.setContentType("application/x-www-form-urlencoded");
-        remoteMsg.setCharset("GBK");
-        remoteMsg.setRequestBody(body);
+        RequestParam requestParam = new RequestParam();
+        requestParam.setHost("www.allsagesbooks.com");
+        requestParam.setPath("/search/searchResult.asp");
+        requestParam.setScheme("http");
+        requestParam.setHeadParamMap(headParams);
+        requestParam.setContentType("application/x-www-form-urlencoded");
+        requestParam.setCharset("GBK");
+        requestParam.setRequestBody(body);
 
-        return analysisHtml(remoteCallService.remoteCallByHttpClientPost(remoteMsg));
+        return analysisHtml(remoteCallService.remoteCallByHttpClientPost(requestParam));
 
     }
 
@@ -89,10 +94,10 @@ public class AllsagesbookService implements IAllsagesbook {
         String rankDate = DateUtils.formatDate(calendar.getTime(), "yyyy/MM");
         Map<Double, String> redisRank = redisClient.getZSetBySocre("allsagesbook_rank_" + rankDate, 1D, 10D);
         if (redisRank == null || redisRank.size() <= 0) {
-            RemoteMsg remoteMsg = new RemoteMsg();
-            remoteMsg.setUrl("http://www.allsagesbooks.com/top10/index.asp");
-            remoteMsg.setCharset("GBK");
-            redisRank = analysisRankHtml(remoteCallService.remoteCallByRequestGet(remoteMsg));
+            RequestParam requestParam = new RequestParam();
+            requestParam.setUrl("http://www.allsagesbooks.com/top10/index.asp");
+            requestParam.setCharset("GBK");
+            redisRank = analysisRankHtml(remoteCallService.remoteCallByRequestGet(requestParam));
             //存到缓存
             Long zset = redisClient.addZSetConllection("allsagesbook_rank_" + rankDate, redisRank, 90L, TimeUnit.DAYS);
         }

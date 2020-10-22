@@ -3,6 +3,11 @@ package org.weaxsey.traslation;
 import org.springframework.stereotype.Service;
 import org.weaxsey.traslation.api.ITranslateService;
 
+/**
+ * YouDao Translate
+ *
+ * @author Weaxs
+ */
 @Service("youdao")
 public class YoudaoTranslateServiceImpl implements ITranslateService {
 

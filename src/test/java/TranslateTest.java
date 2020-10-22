@@ -19,7 +19,7 @@ public class TranslateTest {
 
     @Test
     public void test() {
-        String msg = multiTranslateService.translate4One("傲慢与偏见");
+        String msg = multiTranslateService.translate("傲慢与偏见");
         logger.info("翻译出的信息为：" + msg);
     }
 

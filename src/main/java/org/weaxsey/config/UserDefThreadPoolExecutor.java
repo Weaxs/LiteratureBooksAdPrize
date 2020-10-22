@@ -7,6 +7,11 @@ import java.util.concurrent.TimeUnit;
 
 import static java.util.concurrent.Executors.defaultThreadFactory;
 
+/**
+ * thread pool
+ *
+ * @author Weaxs
+ */
 public class UserDefThreadPoolExecutor {
 
     public final static ThreadPoolExecutor POOL_EXECUTOR =

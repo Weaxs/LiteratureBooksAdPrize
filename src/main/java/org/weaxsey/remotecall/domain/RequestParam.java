@@ -2,7 +2,12 @@ package org.weaxsey.remotecall.domain;
 
 import java.util.Map;
 
-public class RemoteMsg {
+/**
+ * Remote Param
+ *
+ * @author Weaxs
+ */
+public class RequestParam {
 
     private String host;
     private String path;

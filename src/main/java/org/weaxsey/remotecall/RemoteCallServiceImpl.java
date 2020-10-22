@@ -17,7 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.weaxsey.remotecall.api.IRemoteCallService;
-import org.weaxsey.remotecall.domain.RemoteMsg;
+import org.weaxsey.remotecall.domain.RequestParam;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -25,25 +25,32 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import java.io.*;
 import java.net.*;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.nio.charset.Charset;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Remote Call Service
+ *
+ * @author Weaxs
+ */
 @Service
 public class RemoteCallServiceImpl implements IRemoteCallService {
 
     private static final Logger logger = LoggerFactory.getLogger(RemoteCallServiceImpl.class);
 
-    // 10S
+    /**
+     * 超时时间
+     */
     protected static final int SOCKET_TIMEOUT = 10000;
 
     @Override
-    public String remoteCallByRequestGet(RemoteMsg remoteMsg) {
+    public String remoteCallByRequestGet(RequestParam remoteMsg) {
         try {
             return Request.Get(remoteMsg.getUrl()).execute().returnContent().asString(Charset.forName(remoteMsg.getCharset()));
         } catch (IOException e) {
@@ -53,7 +60,7 @@ public class RemoteCallServiceImpl implements IRemoteCallService {
     }
 
     @Override
-    public String remoteCallByRequestPost(RemoteMsg remoteMsg) {
+    public String remoteCallByRequestPost(RequestParam remoteMsg) {
         try {
             return Request.Post(remoteMsg.getUrl()).bodyString(remoteMsg.getRequestBody(), ContentType.create(remoteMsg.getContentType(), remoteMsg.getCharset()))
                     .execute().returnContent().asString(Charset.forName(remoteMsg.getCharset()));
@@ -65,7 +72,7 @@ public class RemoteCallServiceImpl implements IRemoteCallService {
     }
 
     @Override
-    public String remoteCallByHttpClientPost(RemoteMsg remoteMsg) {
+    public String remoteCallByHttpClientPost(RequestParam remoteMsg) {
 
         //1.组装URI
         List<NameValuePair> params = new ArrayList<NameValuePair>();
@@ -122,7 +129,7 @@ public class RemoteCallServiceImpl implements IRemoteCallService {
     }
 
     @Override
-    public String remoteCallByHttpUrlConnectionPost(RemoteMsg remoteMsg) {
+    public String remoteCallByHttpUrlConnectionPost(RequestParam remoteMsg) {
 
         try {
             // 创建URL对象

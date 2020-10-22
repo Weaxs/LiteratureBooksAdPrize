@@ -4,6 +4,11 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
+/**
+ * stater
+ *
+ * @author Weaxs
+ */
 @SpringBootApplication
 public class QuickStart extends SpringBootServletInitializer {
 

@@ -1,20 +1,45 @@
 package org.weaxsey.book.domain;
 
+/**
+ * book
+ *
+ * @author Weaxs
+ */
 public class BookMessage {
 
-    //书名
-    private String bookName = "";
-    //著译者
-    private String author = "";
-    //出版社
-    private String publisher = "";
-    //出版日期
-    private String publishDate = "";
-    //大于/小于出版日期
-    private String publishPrefix = "";
-    //库存状态
-    private String isHave = "";
-    //获奖年
+    /**
+     * book name
+     */
+    private String bookName;
+
+    /**
+     * author name
+     */
+    private String author;
+
+    /**
+     * publisher
+     */
+    private String publisher;
+
+    /**
+     * publish date
+     */
+    private String publishDate;
+
+    /**
+     * publish prefix
+     */
+    private String publishPrefix;
+
+    /**
+     * is have
+     */
+    private String isHave;
+
+    /**
+     * winner year
+     */
     private String winnerYear;
 
     public String getBookName() {

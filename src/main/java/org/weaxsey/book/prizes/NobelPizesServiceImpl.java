@@ -1,6 +1,5 @@
 package org.weaxsey.book.prizes;
 
-
 import org.apache.http.client.utils.DateUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -11,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.weaxsey.book.domain.BookMessage;
 import org.weaxsey.book.prizes.api.AbstractPrizesServiceImpl;
-import org.weaxsey.remotecall.domain.RemoteMsg;
+import org.weaxsey.remotecall.domain.RequestParam;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -21,12 +20,21 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import static org.weaxsey.book.constant.CommonConstant.*;
+import static org.weaxsey.book.constant.ErrorMsg.NOBEL_YEAR_SMALL_MSG;
+import static org.weaxsey.book.constant.ErrorMsg.hasNotAwarded;
 import static org.weaxsey.config.UserDefThreadPoolExecutor.POOL_EXECUTOR;
 
+/**
+ * Nobel prize
+ *
+ * @author Weaxs
+ */
 @Service("theNobelPizes")
 public class NobelPizesServiceImpl extends AbstractPrizesServiceImpl {
 
     private static final Logger logger = LoggerFactory.getLogger(NobelPizesServiceImpl.class);
+    private static final String NOBEL = "Nobel";
 
     @Override
     public List<BookMessage> getWinner(Calendar calendar) {
@@ -34,10 +42,10 @@ public class NobelPizesServiceImpl extends AbstractPrizesServiceImpl {
         String year = DateUtils.formatDate(calendar.getTime(), YEAR_DATE_FORMAT);
 
         if (Integer.parseInt(year) < Nobel_PRIZES_START_YEAR) {
-            throw new RuntimeException("The first Nobel pize began in 1901.");
+            throw new RuntimeException(NOBEL_YEAR_SMALL_MSG);
         }
         if (calendar.getTime().after(new Date())) {
-            throw new RuntimeException("The " + year + " Nobel pize hasn't awarded.");
+            throw new RuntimeException(hasNotAwarded(Long.parseLong(year), NOBEL));
         }
 
         List<String> years = new ArrayList<>();
@@ -51,38 +59,35 @@ public class NobelPizesServiceImpl extends AbstractPrizesServiceImpl {
             years.add(year);
         }
 
-        List<List<BookMessage>> prizeMsgs = redisClient.<String, List<BookMessage>>getMultiHash("theNobelPizes", years);
-        if (prizeMsgs.get(0) != null && prizeMsgs.get(0).size() > 0) {
-            return prizeMsgs.get(0);
-        }
-        if (isThisYear && prizeMsgs.get(1) != null && prizeMsgs.get(1).size() > 0) {
-            return prizeMsgs.get(1);
-        }
-        logger.info("The " + year + " Nobel Pizes don't store in Redis");
+//        List<List<BookMessage>> prizeMsgs = redisClient.<String, List<BookMessage>>getMultiHash("theNobelPizes", years);
+//        if (prizeMsgs.get(0) != null && prizeMsgs.get(0).size() > 0) {
+//            return prizeMsgs.get(0);
+//        }
+//        if (isThisYear && prizeMsgs.get(1) != null && prizeMsgs.get(1).size() > 0) {
+//            return prizeMsgs.get(1);
+//        }
+//        logger.info("The " + year + " Nobel Pizes don't store in Redis");
 
         List<Callable<List<BookMessage>>> callables = new ArrayList<>();
         for (String y:years) {
-            callables.add(new Callable<List<BookMessage>>() {
-                @Override
-                public List<BookMessage> call() throws Exception {
-                    RemoteMsg remoteMsg = new RemoteMsg();
-                    remoteMsg.setUrl(nobelUrl + y + "/summary/");
-                    String html = remoteCallService.remoteCallByRequestGet(remoteMsg);
-                    List<BookMessage> prizeMsg = getPrizeMsg(html);
-                    for (BookMessage bookMessage:prizeMsg) {
-                        bookMessage.setWinnerYear(y);
-                    }
-                    return prizeMsg;
+            callables.add(() -> {
+                RequestParam requestParam = new RequestParam();
+                requestParam.setUrl(nobelUrl + y + "/summary/");
+                String html = remoteCallService.remoteCallByRequestGet(requestParam);
+                List<BookMessage> prizeMsg = getPrizeMsg(html);
+                for (BookMessage bookMessage:prizeMsg) {
+                    bookMessage.setWinnerYear(y);
                 }
+                return prizeMsg;
             });
         }
         List<BookMessage> prizeMsg = new ArrayList<>();
         try {
             List<Future<List<BookMessage>>> results = POOL_EXECUTOR.invokeAll(callables);
-            for (int i = 0; i < results.size(); i++) {
-                if (results.get(i).toString().contains("Completed normally")) {
-                    prizeMsg = results.get(i).get();
-                    redisClient.addHashStandalone("theNobelPizes", years.get(i), prizeMsg);
+            for (Future<List<BookMessage>> result : results) {
+                if (result.toString().contains("Completed normally")) {
+                    prizeMsg = result.get();
+//                    redisClient.addHashStandalone("theNobelPizes", years.get(i), prizeMsg);
                 }
             }
 
