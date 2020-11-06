@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * Redis Client
@@ -336,12 +337,9 @@ public class RedisClient<V> {
     }
 
     private Set<ZSetOperations.TypedTuple<V>> map2TypedTupleSet(@NonNull Map<Double, V> value) {
-        Set<ZSetOperations.TypedTuple<V>> typedTupleSet = new HashSet<>();
-        for (Map.Entry<Double, V> valueEntry:value.entrySet()) {
-            ZSetOperations.TypedTuple<V> typedTuple = new DefaultTypedTuple<>(valueEntry.getValue(), valueEntry.getKey());
-            typedTupleSet.add(typedTuple);
-        }
-        return typedTupleSet;
+        return value.entrySet().stream()
+                .map(entry -> new DefaultTypedTuple<>(entry.getValue(), entry.getKey()))
+                .collect(Collectors.toSet());
     }
 
     private Map<Double, V> typedTupleSet2Map(@Nullable Set<ZSetOperations.TypedTuple<V>> typedTupleSet) {

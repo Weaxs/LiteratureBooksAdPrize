@@ -70,9 +70,7 @@ public class BookerPizesServiceImpl extends AbstractPrizesServiceImpl {
         String html = remoteCallService.remoteCallByRequestGet(requestParam);
         String winnerYear = getWinnerYear(html);
         List<BookMessage> prizeMsg = getPrizeMsg(html);
-        for (BookMessage book:prizeMsg) {
-            book.setWinnerYear(winnerYear);
-        }
+        prizeMsg.forEach(book -> book.setWinnerYear(winnerYear));
 //        redisClient.addHashStandalone("theBookerPizes", winnerYear, prizeMsg);
         logger.info("The {} Booker Pizes: {}", winnerYear, JSONObject.toJSONString(prizeMsg));
 
@@ -83,14 +81,9 @@ public class BookerPizesServiceImpl extends AbstractPrizesServiceImpl {
         Document document = Jsoup.parse(html);
         Elements items = document.select("h2[class=field field-name-field-winning-book-heading field-type-text field-label-hidden title]");
 
-        String winnerYear = null;
-        for (Element element:items) {
-            if (element.text().contains("Winners") || element.text().contains("Winner")) {
-                winnerYear = element.text().split(" ")[1];
-                break;
-            }
-        }
-        return winnerYear;
+        return items.stream()
+                .filter(element -> element.text().contains("Winners") || element.text().contains("Winner"))
+                .findFirst().map(element -> element.text().split(" ")[1]).orElse(null);
     }
 
     private List<BookMessage> getPrizeMsg(String html) {

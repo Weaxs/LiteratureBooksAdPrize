@@ -33,6 +33,7 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Remote Call Service
@@ -76,9 +77,7 @@ public class RemoteCallServiceImpl implements IRemoteCallService {
 
         //1.组装URI
         List<NameValuePair> params = new ArrayList<NameValuePair>();
-        for (Map.Entry<String, String> entry:remoteMsg.getHeadParamMap().entrySet()) {
-            params.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
-        }
+        remoteMsg.getHeadParamMap().forEach((key, value) -> params.add(new BasicNameValuePair(key, value)));
         URI uri = null;
         try {
             uri = new URIBuilder().setScheme(remoteMsg.getScheme()).setHost(remoteMsg.getHost())
@@ -155,13 +154,10 @@ public class RemoteCallServiceImpl implements IRemoteCallService {
             // 读取服务器的数据
             InputStream is = conn.getInputStream();
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
-            StringBuilder builder = new StringBuilder();
-            String line = null;
-            while ((line = br.readLine()) != null) {
-                builder.append(line);
-            }
+            String builder;
+            builder = br.lines().collect(Collectors.joining());
 
-            String text = builder.toString();
+            String text = builder;
 
             // 关闭数据流
             close(br);

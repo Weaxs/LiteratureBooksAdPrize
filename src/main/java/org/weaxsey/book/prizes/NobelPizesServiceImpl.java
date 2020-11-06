@@ -102,11 +102,11 @@ public class NobelPizesServiceImpl extends AbstractPrizesServiceImpl {
         Document document = Jsoup.parse(html);
         //查询便签<a>的href属性中以https://www.nobelprize.org/prizes/literature/开头的
         Elements authorNameItems = document.select("a[href~=^https://www.nobelprize.org/prizes/literature/][title=Title text]");
-        for (Element author:authorNameItems) {
+        authorNameItems.forEach(author -> {
             BookMessage book = new BookMessage();
             book.setAuthor(author.text());
             prizeMsg.add(book);
-        }
+        });
         return prizeMsg;
     }
 
