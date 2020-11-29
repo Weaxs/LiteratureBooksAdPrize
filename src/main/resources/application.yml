@@ -1,6 +1,6 @@
 spring:
   redis:
-    host: 18.182.48.242
+    host: 127.0.0.1
     port: 6379
     timeout: 1000
     pool:
@@ -10,9 +10,9 @@ spring:
       min-idle: 0
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: mysql://usa.weaxsey.org:3306/test?characterEncoding=utf-8&useSSL=false
-    username: Weaxs
-    password: 01weaxs06kun04_org
+    url: 
+    username: 
+    password: 
 server:
   servlet:
     context-path: /literature
