@@ -32,7 +32,6 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -53,7 +52,10 @@ public class RemoteCallServiceImpl implements IRemoteCallService {
     @Override
     public String remoteCallByRequestGet(RequestParam remoteMsg) {
         try {
-            return Request.Get(remoteMsg.getUrl()).execute().returnContent().asString(Charset.forName(remoteMsg.getCharset()));
+            Request request = Request.Get(remoteMsg.getUrl());
+
+            return request.execute().returnContent()
+                    .asString(Charset.forName(remoteMsg.getCharset()));
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
             throw new RuntimeException("请求接口出错！", e);
@@ -63,8 +65,10 @@ public class RemoteCallServiceImpl implements IRemoteCallService {
     @Override
     public String remoteCallByRequestPost(RequestParam remoteMsg) {
         try {
-            return Request.Post(remoteMsg.getUrl()).bodyString(remoteMsg.getRequestBody(), ContentType.create(remoteMsg.getContentType(), remoteMsg.getCharset()))
-                    .execute().returnContent().asString(Charset.forName(remoteMsg.getCharset()));
+            Request request = Request.Post(remoteMsg.getUrl())
+                    .bodyString(remoteMsg.getRequestBody(), ContentType.create(remoteMsg.getContentType(), remoteMsg.getCharset()));
+
+            return request.execute().returnContent().asString(Charset.forName(remoteMsg.getCharset()));
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
             throw new RuntimeException("请求接口出错！", e);
